@@ -1,2 +1,2 @@
 # SnakeGame
-This is a Snake game made by Dipaditya Das with python3
+This is a Snake game made by Dipaditya Das with python3.
