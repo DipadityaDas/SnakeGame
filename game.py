@@ -4,12 +4,16 @@
 import turtle
 import time
 import random
-delay = 0.1
+delay = 0.15
+
+# Score
+score = 0
+high_score = 0
 
 # Setup the screen
 window = turtle.Screen()
 window.title("Snake Game by @DipadityaDas")
-window.bgcolor("white")
+window.bgcolor("purple")
 window.setup(width=600, height=600)
 window.tracer(0)
 
@@ -29,6 +33,16 @@ food.color("red")
 food.penup()
 food.goto(0, 100)
 
+# Pen
+pen = turtle.Turtle()
+pen.speed(0)
+pen.shape("square")
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0, 260)
+pen.write("Score: 0 High Score: 0 ",align="center",font=("Courier",24,"normal"))
+
 segments = []
 
 # Snake Direction Functions
@@ -47,24 +61,27 @@ def move():
         head.setx(x + 20)
 
 def go_up():
-    head.direction = "up"
+    if head.direction != "down":
+        head.direction = "up"
     
 def go_down():
-    head.direction = "down"
+    if head.direction != "up":
+        head.direction = "down"
 
 def go_left():
-    head.direction = "left"
+    if head.direction != "right":
+        head.direction = "left"
 
 def go_right():
-    head.direction = "right"
+    if head.direction != "left":
+        head.direction = "right"
 
 # Keybindings
 window.listen()
-window.onkeypress(go_up, "8")
-window.onkeypress(go_down, "2")
-window.onkeypress(go_left, "4")
-window.onkeypress(go_right, "6")
-
+window.onkeypress(go_up, "w")
+window.onkeypress(go_down, "s")
+window.onkeypress(go_left, "a")
+window.onkeypress(go_right, "d")
 
 # Main Game Loop
 while True:
@@ -77,6 +94,15 @@ while True:
         # Hide the Segments
         for segment in segments:
             segment.goto(1000, 1000)
+        
+        # Clear the segments list
+        segments.clear()
+
+        # Reset the score and delay
+        delay = 0.15
+        score = 0
+        pen.clear()
+        pen.write("Score: {} High Score: {} ".format(score, high_score), align="center",font=("Courier",24,"normal"))
 
     # Check for a collision with the food
     if head.distance(food) < 20:
@@ -93,6 +119,18 @@ while True:
         new_segment.penup()
         segments.append(new_segment)
 
+        # Shortend the Delay
+        delay -= 0.001
+
+        # Increase The Score
+        score = score + 10
+
+        if score > high_score:
+            high_score = score
+        
+        pen.clear()
+        pen.write("Score: {} High Score: {} ".format(score, high_score), align="center",font=("Courier",24,"normal"))
+    
     # Move the end segment first 
     for index in range(len(segments)-1, 0, -1):
         x = segments[index-1].xcor()
@@ -107,6 +145,26 @@ while True:
     
     move()
     
+    # Check for head collision with the body segments
+    for segment in segments:
+        if segment.distance(head) < 20:
+            time.sleep(1)
+            head.goto(0,0)
+            head.direction = "stop"
+
+            # Hide the Segments
+            for segment in segments:
+                segment.goto(1000, 1000)
+
+            # Clear the segments list
+            segments.clear()
+
+            # Reset the score and delay
+            delay = 0.15
+            score = 0
+            pen.clear()
+            pen.write("Score: {} High Score: {} ".format(score, high_score), align="center",font=("Courier",24,"normal"))
+
     time.sleep(delay)
 
 window.mainloop()
